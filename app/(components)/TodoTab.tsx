@@ -1,3 +1,4 @@
+import TaskButton from "./TaskButton";
 import TodoContainer from "./TodoContainer";
 
 
@@ -8,7 +9,11 @@ export default function TodoTab({status}) {
                         <h1>{status}</h1>
                         <img src="./menu.png" alt="" className="w-7"/>
                     </div>
+                    
                     <TodoContainer/>
+
+                    <TaskButton/>
+
                 </div>
   )
 }

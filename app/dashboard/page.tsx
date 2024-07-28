@@ -1,10 +1,9 @@
 import Button from "../(components)/Button";
 import Navbar from "../(components)/Navbar";
-import Status from "../(components)/Priority";
-import TaskButton from "../(components)/TaskButton";
 import TodoTab from "../(components)/TodoTab";
 
 export default function page() {
+    
     return (
         <div className="relative bg-[#F7F7F7] flex">
             <Navbar />

@@ -1,5 +1,4 @@
 import Status from "./Priority";
-import TaskButton from "./TaskButton";
 
 
 export default function TodoContainer() {
@@ -22,7 +21,6 @@ export default function TodoContainer() {
                     <h1 className="timeofCreation text-slate-500">1hr / day ago</h1>
                     </div>
 
-                    <TaskButton/>
                     </div>
   )
 }
