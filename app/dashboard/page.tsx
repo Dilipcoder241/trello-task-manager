@@ -6,52 +6,108 @@ import TodoTab from "../(components)/TodoTab";
 import axios from "../(utils)/axios";
 import { useEffect, useState } from "react";
 import { useMyContext } from "../(context)/context";
+import { DragDropContext, DropResult } from "react-beautiful-dnd";
 
 interface Todo {
     _id: string;
     title: string;
     status: 'todo' | 'inprogress' | 'underreview' | 'finished';
-    description?:string;
-    priority?:string;
-    deadline?:Date;
-  }
+    description?: string;
+    priority?: string;
+    deadline?: Date;
+}
 
 
 export default function page() {
-  const {globTodos,setGlobTodos} = useMyContext();
+    const { globTodos, setGlobTodos } = useMyContext();
 
     const [Todo, setTodo] = useState([]);
     const [inprogress, setInprogress] = useState([]);
     const [underReview, setUnderReview] = useState([]);
     const [Finished, setFinished] = useState([]);
 
-    const getTodo = async ()=>{
+    const getTodo = async () => {
         try {
-            const {data} = await axios.get("todo/getalltodo");
+            const { data } = await axios.get("todo/getalltodo");
             setGlobTodos(data);
         } catch (error) {
-            toast.error((error as any)?.response?.data?.msg);    
+            toast.error((error as any)?.response?.data?.msg);
         }
-         
+
     }
 
-    const setinCols =()=>{
-        setTodo(globTodos.filter((todo:Todo)=>{ return todo.status=="todo"}));
-        setInprogress(globTodos.filter((todo:Todo)=>{ return todo.status=="inprogress"}));
-        setUnderReview(globTodos.filter((todo:Todo)=>{ return todo.status=="underreview"}));
-        setFinished(globTodos.filter((todo:Todo)=>{ return todo.status=="finished"}));
+    const setinCols = () => {
+        setTodo(globTodos.filter((todo: Todo) => { return todo.status == "todo" }));
+        setInprogress(globTodos.filter((todo: Todo) => { return todo.status == "inprogress" }));
+        setUnderReview(globTodos.filter((todo: Todo) => { return todo.status == "underreview" }));
+        setFinished(globTodos.filter((todo: Todo) => { return todo.status == "finished" }));
+    }
+
+    const onDragEnd = (e: DropResult) => {
+        const { source, destination } = e;
+        if (destination == null) return;
+
+        const sourceTodo = globTodos.find(todo => todo._id == source.droppableId);
+        const destinationTodo = globTodos.find(todo => todo._id == destination.droppableId);
+        const sourceTab = globTodos.find(todo => todo._id == source.droppableId).status;
+        const destinationTab = globTodos.find(todo => todo._id == destination.droppableId).status;
+        if (sourceTab == destinationTab) {
+            if (sourceTab == "todo") {
+                orderChanger(sourceTodo, destinationTodo, Todo, setTodo);
+            }
+            else if (sourceTab == "inprogress") {
+                orderChanger(sourceTodo, destinationTodo, inprogress, setInprogress)
+            }
+            else if (sourceTab == "underreview") {
+                orderChanger(sourceTodo, destinationTodo, underReview, setUnderReview);
+            }
+            else if (sourceTab == "finished") {
+                orderChanger(sourceTodo, destinationTodo, Finished, setFinished);
+            }
+            else {
+                toast.error("something wrong in draging");
+            }
+        }
+        else{
+            const sourceTodoId = sourceTodo._id;
+            const destinationTodoId = destinationTodo._id;
+            
+            const updatedTodos = globTodos.map(todo => {
+                if (todo._id === sourceTodoId) {             
+                  return { ...todo, status: destinationTab };
+                }
+                return todo;
+            })
+
+            setGlobTodos(updatedTodos);
+        }
+
+    }
+
+
+    const orderChanger = (sT, dT, Td, setT) => {
+        let orderchanged = [...Td];
+        const sourceIndex = orderchanged.indexOf(sT);
+        const destinationIndex = orderchanged.indexOf(dT);
+        
+
+        const [movedTodo] = orderchanged.splice(sourceIndex, 1);
+
+        orderchanged.splice(destinationIndex, 0, movedTodo);
+
+        setT(orderchanged);
     }
 
     useEffect(() => {
-      getTodo();
+        getTodo();
     }, [])
 
     useEffect(() => {
-      setinCols();
+        setinCols();
     }, [globTodos])
 
-    
-    
+
+
 
     return (
         <div className="relative bg-[#F7F7F7] flex h-screen">
@@ -94,10 +150,13 @@ export default function page() {
 
 
                 <div className="tasks bg-white p-2 rounded-md grid gap-4 grid-cols-4">
-                    <TodoTab status="Todo" todos={Todo}/>
-                    <TodoTab status="In Progress" todos={inprogress}/>
-                    <TodoTab status="Under Review" todos={underReview}/>
-                    <TodoTab status="Finished" todos={Finished}/>
+                    <DragDropContext onDragEnd={onDragEnd}>
+                        <TodoTab status="Todo" todos={Todo} />
+                        <TodoTab status="In Progress" todos={inprogress} />
+                        <TodoTab status="Under Review" todos={underReview} />
+                        <TodoTab status="Finished" todos={Finished} />
+                    </DragDropContext>
+
                 </div>
 
             </div>

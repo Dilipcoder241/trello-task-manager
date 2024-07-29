@@ -35,7 +35,7 @@ export default function TodoContainer({ todo }) {
   }
 
   return (
-    <div className="space-y-4" draggable>
+    <div className="space-y-4">
       <div className="container bg-[#F9F9F9] p-2 rounded-md space-y-4 border-2 border-[#ECECEC] relative group overflow-hidden">
         <div className="content ">
           <h1>{todo.title}</h1>
