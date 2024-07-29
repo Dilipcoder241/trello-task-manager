@@ -2,9 +2,22 @@ import TaskButton from "./TaskButton";
 import TodoContainer from "./TodoContainer";
 import { Draggable, Droppable } from 'react-beautiful-dnd';
 
+interface Todo {
+  _id: string;
+  title: string;
+  status: 'todo' | 'inprogress' | 'underreview' | 'finished';
+  description?: string;
+  priority?: string;
+  deadline?: string;
+}
 
 
-export default function TodoTab({ status, todos }) {
+interface TodoTabProps {
+  status: string;
+  todos: Todo[];
+}
+
+const TodoTab: React.FC<TodoTabProps> = ({ status, todos }) => {
   return (
     <div className="Todo space-y-4">
       <div className="header flex justify-between">
@@ -15,7 +28,7 @@ export default function TodoTab({ status, todos }) {
       {todos.map((todo , index)=> ( 
       <Droppable key={todo._id} droppableId={todo._id}>
         {(provided)=> (
-          <div key={todo._id} {...provided.droppableProps} ref={provided.innerRef} className="border-2">
+          <div key={todo._id} {...provided.droppableProps} ref={provided.innerRef}>
             <Draggable key={todo._id} draggableId={todo._id} index={index}>
               {(provided)=>(
                 <div {...provided.dragHandleProps} {...provided.draggableProps} ref={provided.innerRef}>
@@ -34,3 +47,5 @@ export default function TodoTab({ status, todos }) {
     </div>
   )
 }
+
+export default TodoTab;

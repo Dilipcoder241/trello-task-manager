@@ -6,11 +6,19 @@ import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 import { MyProvider, useMyContext } from "../(context)/context";
 
+interface ErrorResponse {
+  response?: {
+    data?: {
+      msg?: string;
+    };
+  };
+}
 
-export default function login() {
-  const [passVisible, setPassVisible] = useState(false);
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+
+export default function Login() {
+  const [passVisible, setPassVisible] = useState<boolean>(false);
+  const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
   const router = useRouter();
   const {setUsername} = useMyContext();
 
@@ -29,7 +37,7 @@ export default function login() {
       router.push('/dashboard');
       
     } catch (error) {
-      toast.error((error as any)?.response?.data?.msg);
+      toast.error((error as ErrorResponse)?.response?.data?.msg || "An error occurred");
     }
   }
   return (

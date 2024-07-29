@@ -8,10 +8,10 @@ import { useRouter } from "next/navigation";
 
 
 export default function Home() {
-  const [passVisible, setPassVisible] = useState(false);
-  const [username, setUsername] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [passVisible, setPassVisible] = useState<boolean>(false);
+  const [username, setUsername] = useState<string>("");
+  const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
   const router = useRouter();
   
   const handleSignup = async () =>{

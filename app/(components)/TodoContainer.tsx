@@ -7,13 +7,25 @@ import axios from "../(utils)/axios"
 import { useMyContext } from "../(context)/context";
 import Link from "next/link";
 
+interface Todo {
+  _id: string;
+  title: string;
+  status: 'todo' | 'inprogress' | 'underreview' | 'finished';
+  description?: string;
+  priority?: string;
+  deadline?: string;
+  createdAt?: string;
+}
 
+interface TodoContainerProps {
+  todo: Todo;
+}
 
-export default function TodoContainer({ todo }) {
+const TodoContainer: React.FC<TodoContainerProps> = ({ todo } ) => {
   const { setGlobTodos } = useMyContext();
 
 
-  let distance;
+  let distance:string|undefined;
   if (todo.createdAt) {
     const date = new Date(todo?.createdAt);
     distance = formatDistanceToNow(date, { addSuffix: true });
@@ -60,3 +72,5 @@ export default function TodoContainer({ todo }) {
     </div>
   )
 }
+
+export default TodoContainer;

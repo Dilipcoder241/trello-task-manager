@@ -4,7 +4,7 @@ import Button from "../(components)/Button";
 import Navbar from "../(components)/Navbar";
 import TodoTab from "../(components)/TodoTab";
 import axios from "../(utils)/axios";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useMyContext } from "../(context)/context";
 import { DragDropContext, DropResult } from "react-beautiful-dnd";
 
@@ -14,24 +14,32 @@ interface Todo {
     status: 'todo' | 'inprogress' | 'underreview' | 'finished';
     description?: string;
     priority?: string;
-    deadline?: Date;
+    deadline?: string;
 }
+
+interface ErrorResponse {
+    response?: {
+      data?: {
+        msg?: string;
+      };
+    };
+  }
 
 
 export default function page() {
     const { globTodos, setGlobTodos } = useMyContext();
 
-    const [Todo, setTodo] = useState([]);
-    const [inprogress, setInprogress] = useState([]);
-    const [underReview, setUnderReview] = useState([]);
-    const [Finished, setFinished] = useState([]);
+    const [Todo, setTodo] = useState<Todo[]>([]);
+    const [inprogress, setInprogress] = useState<Todo[]>([]);
+    const [underReview, setUnderReview] = useState<Todo[]>([]);
+    const [Finished, setFinished] = useState<Todo[]>([]);
 
     const getTodo = async () => {
         try {
             const { data } = await axios.get("todo/getalltodo");
             setGlobTodos(data);
         } catch (error) {
-            toast.error((error as any)?.response?.data?.msg);
+            toast.error((error as ErrorResponse)?.response?.data?.msg);
         }
 
     }
@@ -45,12 +53,14 @@ export default function page() {
 
     const onDragEnd = (e: DropResult) => {
         const { source, destination } = e;
+        console.log(source);
+        
         if (destination == null) return;
 
-        const sourceTodo = globTodos.find(todo => todo._id == source.droppableId);
-        const destinationTodo = globTodos.find(todo => todo._id == destination.droppableId);
-        const sourceTab = globTodos.find(todo => todo._id == source.droppableId).status;
-        const destinationTab = globTodos.find(todo => todo._id == destination.droppableId).status;
+        const sourceTodo = globTodos.find((todo:Todo) => todo._id == source.droppableId);
+        const destinationTodo = globTodos.find((todo:Todo) => todo._id == destination.droppableId);
+        const sourceTab = globTodos.find((todo:Todo) => todo._id == source.droppableId).status;
+        const destinationTab = globTodos.find((todo:Todo) => todo._id == destination.droppableId).status;
         if (sourceTab == destinationTab) {
             if (sourceTab == "todo") {
                 orderChanger(sourceTodo, destinationTodo, Todo, setTodo);
@@ -70,9 +80,8 @@ export default function page() {
         }
         else{
             const sourceTodoId = sourceTodo._id;
-            const destinationTodoId = destinationTodo._id;
             
-            const updatedTodos = globTodos.map(todo => {
+            const updatedTodos = globTodos.map((todo:Todo) => {
                 if (todo._id === sourceTodoId) {             
                   return { ...todo, status: destinationTab };
                 }
@@ -85,7 +94,7 @@ export default function page() {
     }
 
 
-    const orderChanger = (sT, dT, Td, setT) => {
+    const orderChanger = (sT:Todo, dT:Todo, Td:Todo[], setT:React.Dispatch<React.SetStateAction<Todo[]>>) => {
         let orderchanged = [...Td];
         const sourceIndex = orderchanged.indexOf(sT);
         const destinationIndex = orderchanged.indexOf(dT);
@@ -99,6 +108,9 @@ export default function page() {
     }
 
     useEffect(() => {
+        if(!localStorage.getItem("Token")){
+            toast.error("Please Login!")
+        }
         getTodo();
     }, [])
 

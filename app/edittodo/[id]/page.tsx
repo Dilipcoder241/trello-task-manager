@@ -1,7 +1,7 @@
 'use client'
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import axios from "../../(utils)/axios";
 import Image from "next/image";
@@ -49,6 +49,13 @@ export default function page({params}) {
     }
 
   }
+
+  useEffect(() => {
+    if(!localStorage.getItem("Token")){
+      toast.error("Please Login!")
+    }
+  }, [])
+  
 
   return (
     <div className="w-full h-screen p-5">
