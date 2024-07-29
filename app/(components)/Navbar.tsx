@@ -1,14 +1,18 @@
 import Link from "next/link";
 import Button from "./Button";
+import { useMyContext } from "../(context)/context";
+
 
 
 export default function Navbar() {
+  const { user } = useMyContext();
+  
   return (
     <div className="w-[20%] h-screen bg-white px-2 py-7 space-y-3 flex flex-col justify-between">
         <div className="top">
         <div className="userInfo flex gap-2 items-center">
             <img src="./person.png" alt="" className="w-12 rounded-lg"/>
-            <h1 className="text-2xl font-semibold">user name</h1>
+            <h1 className="text-2xl font-semibold">{user?user:"username"}</h1>
         </div>
 
         <div className="icons flex justify-between">

@@ -7,13 +7,15 @@ const todoSchema = new mongoose.Schema({
         ref:"user"
     },
     title:{
-        type:String
+        type:String,
+        require:true
     },
-    desc:{
+    description:{
         type:String
     },
     status:{
-        type:String
+        type:String,
+        require:true
     },
     priority:{
         type:String
@@ -21,7 +23,7 @@ const todoSchema = new mongoose.Schema({
     deadline:{
         type:Date
     }
-})
+} , {timestamps:true});
 
 
 module.exports = mongoose.model("todos" , todoSchema);

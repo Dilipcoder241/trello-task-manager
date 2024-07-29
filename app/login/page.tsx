@@ -3,12 +3,16 @@ import Link from "next/link";
 import { useState } from "react";
 import axios from "../(utils)/axios";
 import { toast } from "react-toastify";
+import { useRouter } from "next/navigation";
+import { MyProvider, useMyContext } from "../(context)/context";
 
 
 export default function login() {
   const [passVisible, setPassVisible] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const router = useRouter();
+  const {setUsername} = useMyContext();
 
   const handleLogin= async ()=>{
     if(email==""|| password==""){
@@ -20,15 +24,16 @@ export default function login() {
     }
     try {
       const {data} = await axios.post("/user/login" , body);
-      localStorage.setItem("username",data.Token);
+      setUsername(data.username);
+      localStorage.setItem("Token",data.Token);
+      router.push('/dashboard');
       
-      window.location.href = '/dashboard';
     } catch (error) {
-      toast.error(error.response.data.msg);
-      
+      toast.error((error as any)?.response?.data?.msg);
     }
   }
   return (
+    <MyProvider>
     <div className="w-screen h-screen bg-gradient-to-b from-[#ffff] to-[#afa3ff] flex justify-center">
       <div className="bg-white w-[40%] h-fit mt-[5%] border-2 rounded-lg p-10 space-y-4">
         <h1 className="text-4xl font-bold text-center mb-2">Welcome to <span className="text-[#4534ac]">Workflo</span>!</h1>
@@ -41,6 +46,7 @@ export default function login() {
         <p className="text-center">Don't have an account? Create <Link href="/" className="text-[#4534ac] font-semibold">a new account. </Link></p>
       </div>
     </div>
+    </MyProvider>
   );
 }
 

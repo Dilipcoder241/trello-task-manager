@@ -3,21 +3,25 @@
 import Link from "next/link";
 import { useState } from "react";
 import { toast } from "react-toastify";
-import axios from "../(utils)/axios";
-import { useSearchParams } from "next/navigation";
+import axios from "../../(utils)/axios";
+import Image from "next/image";
+import { useMyContext } from "@/app/(context)/context";
 
 
-export default function page() {
-  const searchParams = useSearchParams();
-  const [title, setTitle] = useState("");
-  const [status, setStatus] = useState(searchParams.get('tab')?.replace("+" , "").replace(" " , "").toLowerCase() || "");
-  const [priority, setPriority] = useState("");
-  const [deadline, setDeadline] = useState("");
-  const [description, setDescription] = useState("");
+export default function page({params}) {
+  const {id} = params;
+  const {globTodos , setGlobTodos} = useMyContext();
+  const [updateTodo, setupdateTodo] = useState(globTodos.filter(todo=>{return todo._id==id})[0]);
+  
+  const [title, setTitle] = useState(updateTodo?.title || "");
+  const [status, setStatus] = useState(updateTodo?.status || "");
+  const [priority, setPriority] = useState(updateTodo?.priority || "");
+  const [deadline, setDeadline] = useState(updateTodo?.deadline.split('T')[0] || "");
+  const [description, setDescription] = useState(updateTodo?.description || "");
   
   
 
-  const handleCreateTodo = async()=>{
+  const handleUpdateTodo = async(todoid)=>{
     if(title=="" || status==""  ){
         toast.error("please fill title and status");
         return;
@@ -27,17 +31,18 @@ export default function page() {
       title,status,priority,deadline,description
     }
     try {
-      const {data} = await axios.post("/todo/create", body);
+      const {data} = await axios.post(`/todo/update/${todoid}`, body);
       if(data){
         setTitle("");
         setStatus("");
         setPriority("");
         setDeadline("");
         setDescription("");
-        toast.success("todo created");
+        setGlobTodos(data);
+        toast.success("Todo Updated");
       }
       else{
-        toast.error("some error occuer in createing todo");
+        toast.error("some error occuer in Updating todo");
       }
     } catch (error) {
       toast.error((error as any).response.data.msg);
@@ -49,17 +54,17 @@ export default function page() {
     <div className="w-full h-screen p-5">
       <div className="flex justify-between">
         <div className="flex items-center gap-5">
-          <Link href="/dashboard"><img src="./cross.png" alt="" className="w-7" /></Link>
-          <img src="./minmax.png" alt="" className="w-7" />
+          <Link href="/dashboard"><Image height={28} width={28} src="/cross.png" alt="" className="w-7" /></Link>
+          <Image height={28} width={28} src="/minmax.png" alt="" className="w-7" />
         </div>
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-3 bg-[#F4F4F4] p-3 rounded-md">
             <p>share</p>
-            <img src="./share.png" alt="" className="w-6" />
+            <Image height={28} width={28} src="/share.png" alt="" className="w-6" />
           </div>
           <div className="flex items-center gap-3 bg-[#F4F4F4] p-3 rounded-md">
             <p>Favorite</p>
-            <img src="./favorite.png" alt="" className="w-6" />
+            <Image height={28} width={28} src="/favorite.png" alt="" className="w-6" />
           </div>
         </div>
       </div>
@@ -71,25 +76,25 @@ export default function page() {
           <div>
             <div className="mt-10">
                 <div className="flex gap-5 items-center">
-                  <img src="./status.png" alt="" className="w-7" />
+                  <Image height={28} width={28} src="/status.png" alt="" className="w-7" />
                   <p className="text-xl">Status</p>
                 </div>
             </div>
             <div className="mt-10">
                 <div className="flex gap-5 items-center">
-                  <img src="./priority.png" alt="" className="w-7" />
+                  <Image height={28} width={28} src="/priority.png" alt="" className="w-7" />
                   <p className="text-xl">Priority</p>
                 </div>
             </div>
             <div className="mt-10">
                 <div className="flex gap-5 items-center">
-                  <img src="./calender.png" alt="" className="w-7" />
+                  <Image height={28} width={28} src="/calender.png" alt="" className="w-7" />
                   <p className="text-xl">Deadline</p>
                 </div>
             </div>
             <div className="mt-10">
                 <div className="flex gap-5 items-center">
-                  <img src="./pencil.png" alt="" className="w-7" />
+                  <Image height={28} width={28} src="/pencil.png" alt="" className="w-7" />
                   <p className="text-xl">Description</p>
                 </div>
             </div>
@@ -120,7 +125,7 @@ export default function page() {
                 <textarea className="outline-none border-2 rounded-md p-2" value={description} onChange={(e)=>{setDescription(e.target.value)}} rows={5} cols={30} placeholder="Description"></textarea>
             </div>
 
-            <button onClick={handleCreateTodo} className="mt-5 w-full bg-green-400 p-3 rounded-lg font-semibold hover:bg-green-500 duration-200 hover:text-white text-slate-700">create todo</button>
+            <button onClick={()=>handleUpdateTodo(id)} className="mt-5 w-full bg-green-400 p-3 rounded-lg font-semibold hover:bg-green-500 duration-200 hover:text-white text-slate-700">Update todo</button>
           </div>
 
         </div>
