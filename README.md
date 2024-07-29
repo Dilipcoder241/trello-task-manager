@@ -1,5 +1,10 @@
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
+here is the woking video of the project 
+https://github.com/user-attachments/assets/6e0d760c-ce72-4e53-a0f5-f8eeafaa06f5
+
+
+
 ## Getting Started
 to start both frontend and backend you can use this comment
 ```bash
